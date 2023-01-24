@@ -8,16 +8,20 @@ function createTextElement(text) {
   };
 }
 
-export function createElement(type, props, ...children) {
+export function createElement(typeOrGenerator, props, ...children) {
+  if (typeof typeOrGenerator === 'function') {
+    return typeOrGenerator();
+  }
+
   return {
-    type,
+    type: typeOrGenerator,
     props: {
       ...props,
       children: children.map(child =>
         typeof child === 'object' ? child : createTextElement(child)
       )
     }
-  };
+  }
 }
 
 export function render(elementOrElementGenerator, parentDom) {
