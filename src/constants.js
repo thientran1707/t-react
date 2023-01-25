@@ -1,0 +1,1 @@
+export const REACT_TEXT_ELEMENT = 'TEXT_ELEMENT';
