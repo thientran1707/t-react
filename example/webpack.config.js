@@ -25,7 +25,7 @@ const config = {
         use: {
           loader: 'babel-loader',
         },
-      }
+      },
     ],
   },
   resolve: {
@@ -40,7 +40,7 @@ if (DEBUG) {
   config.optimization = {
     minimize: false,
     minimizer: [],
-  }
+  };
 }
 
 module.exports = config;

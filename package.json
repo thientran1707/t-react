@@ -4,5 +4,12 @@
   "description": "A simple implementation of ReactJs",
   "main": "src/index.js",
   "author": "Thien Tran",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "scripts": {
+    "run-prettier": "prettier --config ./.prettierrc.json --write",
+    "check-prettier": "prettier --config ./.prettierrc.json --check"
+  },
+  "devDependencies": {
+    "prettier": "2.8.0"
+  }
 }

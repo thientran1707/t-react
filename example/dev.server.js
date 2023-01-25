@@ -7,7 +7,7 @@ const app = express();
 const PORT = 8080;
 const htmlFile = fs.readFileSync(path.join('dist', 'index.html'));
 
-app.use(express.static('dist'))
+app.use(express.static('dist'));
 
 app.get('*', (req, res) => {
   res.send(htmlFile.toString());

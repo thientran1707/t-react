@@ -6,8 +6,8 @@ export function createTextElement(text) {
     type: REACT_TEXT_ELEMENT,
     props: {
       nodeValue: text,
-      children: []
-    }
+      children: [],
+    },
   };
 }
 
@@ -22,7 +22,7 @@ export function createElement(typeOrGenerator, props, ...children) {
       ...props,
       children: children.map(child =>
         typeof child === 'object' ? child : createTextElement(child)
-      )
-    }
-  }
+      ),
+    },
+  };
 }
