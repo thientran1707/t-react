@@ -6,10 +6,15 @@
   "author": "Thien Tran",
   "license": "UNLICENSED",
   "scripts": {
-    "run-prettier": "prettier --config ./.prettierrc.json --write",
-    "check-prettier": "prettier --config ./.prettierrc.json --check"
+    "prettier": "prettier --config ./.prettierrc.json --write .",
+    "prepare": "husky install"
   },
   "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
     "prettier": "2.8.0"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
