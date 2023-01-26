@@ -1,6 +1,24 @@
 // Constants
 import { REACT_TEXT_ELEMENT } from '../constants';
 
+let nextUnitOfWork = null;
+
+function performUnitOfWork(nextUnitOfWork) {
+  // TODO
+}
+
+function workLoop(deadline) {
+  let shouldYield = false;
+
+  while (nextUnitOfWork && !shouldYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+
+    shouldYield = deadline.timeRemaining() <= 0;
+  }
+
+  requestIdleCallback(workLoop);
+}
+
 export function render(elementOrElementGenerator, parentDom) {
   const element =
     typeof elementOrElementGenerator === 'function'
