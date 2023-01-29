@@ -4,6 +4,7 @@ import { createDom } from '../dom';
 import { REACT_TEXT_ELEMENT } from '../constants';
 
 let nextUnitOfWork = null;
+let wipRoot = null;
 
 /**
  * Fiber is a structure for unit of work { type, dom, parent, child, sibling, props }
@@ -12,10 +13,6 @@ function performUnitOfWork(fiber) {
   // Step 1: Create dom and append to parent
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
-  }
-
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
   }
 
   // Step 2: Create new fiber
@@ -60,15 +57,38 @@ function performUnitOfWork(fiber) {
   }
 }
 
+function commitRoot() {
+  commitWork(wipRoot.child);
+  wipRoot = null;
+}
+
+function commitWork(fiber) {
+  // base case
+  if (!fiber) {
+    return;
+  }
+
+  const parentDom = fiber.parent.dom;
+  parentDom.appendChild(fiber.dom);
+
+  // Recursively commit the child and sibling
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
+
 function workLoop(deadline) {
-  console.log('workLoop');
   let shouldYield = false;
 
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
 
     shouldYield = deadline.timeRemaining() <= 0;
-    console.log('shouldYield = ', shouldYield);
+  }
+
+  // we have completed the render phase, because there is no nextUnitOfWork
+  // commit the work
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot(wipRoot);
   }
 
   // This will create the infinite loop
@@ -82,12 +102,14 @@ export function render(elementOrElementGenerator, parentDom) {
       : elementOrElementGenerator;
 
   // set nextUnitOfWork
-  nextUnitOfWork = {
+  wipRoot = {
     dom: parentDom,
     props: {
       children: [element],
     },
   };
+
+  nextUnitOfWork = wipRoot;
 }
 
 // Start the work loop
