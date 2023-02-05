@@ -19,5 +19,15 @@ export function createDom(fiber) {
 }
 
 export function updateDom(dom, prevProps, nextProps) {
-  // TODO update dom
+  // remove props that are removed
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(key => nextProps[key] == null)
+    .forEach(key => (dom[key] = ''));
+
+  // update or add new props
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(key => prevProps[key] !== nextProps[key])
+    .forEach(key => (dom[key] = nextProps[key]));
 }
