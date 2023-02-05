@@ -1,9 +1,16 @@
+/**
+ * Compare the diff between old fibers and the new fibers
+ */
 export function reconcileChildren(wipFiber, elements) {
   let index = 0;
+  let oldFiber =
+    wipFiber.alternate && wipFiber.alternate.child
+      ? wipFiber.alternate.child
+      : null;
   let previousSibling = null;
 
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
+  while (index < elements.length || oldFiber != null) {
+    const element = elements[index];
 
     const newFiber = {
       type: element.type,
@@ -12,12 +19,15 @@ export function reconcileChildren(wipFiber, elements) {
       dom: null,
     };
 
-    if (i === 0) {
+    // TODO compare oldFiber and new
+
+    if (index === 0) {
       wipFiber.child = newFiber;
     } else {
       previousSibling.sibling = newFiber;
     }
 
     previousSibling = newFiber;
+    index++;
   }
 }
