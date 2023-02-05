@@ -7,9 +7,10 @@ import { REACT_TEXT_ELEMENT } from '../constants';
 let nextUnitOfWork = null;
 let currentRoot = null;
 let wipRoot = null;
+let deletions = [];
 
 /**
- * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, props }
+ * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, effecTag, props }
  * 1) Create dom
  * 2) Reconcile
  * 3) Find next unit of work
@@ -42,10 +43,8 @@ function performUnitOfWork(fiber) {
 }
 
 function commitRoot() {
-  console.time('commitRoot');
+  deletions.forEach(commitWork);
   commitWork(wipRoot.child);
-  console.timeEnd('commitRoot');
-
   currentRoot = wipRoot;
   wipRoot = null;
 }
@@ -97,7 +96,7 @@ export function render(elementOrElementGenerator, parentDom) {
     },
     alternate: currentRoot,
   };
-
+  deletions = [];
   nextUnitOfWork = wipRoot;
 }
 

@@ -1,7 +1,8 @@
+import { EFFECT_TAG } from '../constants';
 /**
  * Compare the diff between old fibers and the new fibers
  */
-export function reconcileChildren(wipFiber, elements) {
+export function reconcileChildren(wipFiber, elements, deletions) {
   let index = 0;
   let oldFiber =
     wipFiber.alternate && wipFiber.alternate.child
@@ -15,13 +16,34 @@ export function reconcileChildren(wipFiber, elements) {
 
     // TODO compare oldFiber and new
     // oldFiber: what we have render last time, element is new thing to render to the DOM
-    const sameTime = oldFiber && element && element.type === oldFiber.type;
+    const sameType = oldFiber && element && element.type === oldFiber.type;
     if (sameType) {
-      // TODO update the DOM node with new props
+      // Update the DOM with new props
+      newFiber = {
+        type: oldFiber.type,
+        props: element.props,
+        dom: oldFiber.dom,
+        parent: wipFiber,
+        alternate: oldFiber,
+        effecTag: EFFECT_TAG.UPDATE,
+      };
     } else if (element) {
-      // TODO add the DOM node
+      // Add the new DOM node
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: null,
+        parent: wipFiber,
+        alternate: null,
+        effecTag: EFFECT_TAG.PLACEMENT,
+      };
     } else if (oldFiber) {
-      // TODO delete oldFiber's node
+      // delete oldFiber's DOM node
+      // we do not have the new fiber so we have to add the effect tag to the old fiber
+      // but when we commit the work, we do it from the wipRoot, which does not have the old fibers
+      // so we need an array to keep track of nodes to remove
+      oldFiber.effecTag = EFFECT_TAG.DELETION;
+      deletions.push(oldFiber);
     }
 
     if (index === 0) {
