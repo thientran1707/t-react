@@ -17,3 +17,7 @@ export function createDom(fiber) {
 
   return dom;
 }
+
+export function updateDom(dom, prevProps, nextProps) {
+  // TODO update dom
+}

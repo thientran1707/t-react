@@ -46,6 +46,10 @@ export function reconcileChildren(wipFiber, elements, deletions) {
       deletions.push(oldFiber);
     }
 
+    if (oldFiber) {
+      oldFiber = oldFiber.sibling;
+    }
+
     if (index === 0) {
       wipFiber.child = newFiber;
     } else {

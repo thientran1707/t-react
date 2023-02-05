@@ -1,8 +1,8 @@
-import { createDom } from '../dom';
+import { createDom, updateDom } from '../dom';
 import { reconcileChildren } from '../reconcile';
 
 // Constants
-import { REACT_TEXT_ELEMENT } from '../constants';
+import { REACT_TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 
 let nextUnitOfWork = null;
 let currentRoot = null;
@@ -56,7 +56,16 @@ function commitWork(fiber) {
   }
 
   const parentDom = fiber.parent.dom;
-  parentDom.appendChild(fiber.dom);
+  if (fiber.effectTag === EFFECT_TAG.PLACEMENT && fiber.dom) {
+    // Add new DOM node
+    parentDom.appendChild(fiber.dom);
+  } else if (fiber.effecTag === EFFECT_TAG.UPDATE && !fiber.dom) {
+    // Update DOM node
+    updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+  } else if (fiber.effecTag === EFFECT_TAG.DELETION) {
+    // Delete DOM node
+    parentDom.removeChild(fiber.dom);
+  }
 
   // Recursively commit the child and sibling
   commitWork(fiber.child);
