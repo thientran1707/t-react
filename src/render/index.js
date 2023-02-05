@@ -1,43 +1,27 @@
 import { createDom } from '../dom';
+import { reconcileChildren } from '../reconcile';
 
 // Constants
 import { REACT_TEXT_ELEMENT } from '../constants';
 
 let nextUnitOfWork = null;
+let currentRoot = null;
 let wipRoot = null;
 
 /**
- * Fiber is a structure for unit of work { type, dom, parent, child, sibling, props }
+ * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, props }
+ * 1) Create dom
+ * 2) Reconcile
+ * 3) Find next unit of work
  */
 function performUnitOfWork(fiber) {
-  // Step 1: Create dom and append to parent
+  // Step 1: Create dom
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
   }
 
   // Step 2: Create new fiber
-  let index = 0;
-  let previousSibling = null;
-
-  const elements = fiber.props.children;
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
-
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    };
-
-    if (i === 0) {
-      fiber.child = newFiber;
-    } else {
-      previousSibling.sibling = newFiber;
-    }
-
-    previousSibling = newFiber;
-  }
+  reconcileChildren(fiber, fiber.props.children);
 
   // Step 3: Return next unit of work
 
@@ -58,7 +42,11 @@ function performUnitOfWork(fiber) {
 }
 
 function commitRoot() {
+  console.time('commitRoot');
   commitWork(wipRoot.child);
+  console.timeEnd('commitRoot');
+
+  currentRoot = wipRoot;
   wipRoot = null;
 }
 
@@ -107,6 +95,7 @@ export function render(elementOrElementGenerator, parentDom) {
     props: {
       children: [element],
     },
+    alternate: currentRoot,
   };
 
   nextUnitOfWork = wipRoot;
