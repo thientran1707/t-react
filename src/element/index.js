@@ -11,13 +11,13 @@ export function createTextElement(text) {
   };
 }
 
-export function createElement(typeOrGenerator, props, ...children) {
-  if (typeof typeOrGenerator === 'function') {
-    return typeOrGenerator();
+export function createElement(type, props, ...children) {
+  if (typeof type === 'function') {
+    return type(props);
   }
 
   return {
-    type: typeOrGenerator,
+    type: type,
     props: {
       ...props,
       children: children.map(child =>

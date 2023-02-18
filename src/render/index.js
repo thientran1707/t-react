@@ -9,6 +9,19 @@ let currentRoot = null;
 let wipRoot = null;
 let deletions = [];
 
+function updateHostComponent(fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+
+  reconcileChildren(fiber, fiber.props.children);
+}
+
+function updateFunctionComponent(fiber) {
+  const children = fiber.type(fiber.props);
+  reconcileChildren(fiber, children);
+}
+
 /**
  * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, effecTag, props }
  * 1) Create dom
@@ -16,13 +29,14 @@ let deletions = [];
  * 3) Find next unit of work
  */
 function performUnitOfWork(fiber) {
-  // Step 1: Create dom
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
+  // We only support Function Component
+  // TODO Add the check for React.Component class if we would like so support Class Component
+  const isFunctionComponent = typeof fiber.type === 'function';
+  if (isFunctionComponent) {
+    updateFunctionComponent(fiber);
+  } else {
+    updateHostComponent(fiber);
   }
-
-  // Step 2: Create new fiber
-  reconcileChildren(fiber, fiber.props.children);
 
   // Step 3: Return next unit of work
 
@@ -93,17 +107,12 @@ function workLoop(deadline) {
   requestIdleCallback(workLoop);
 }
 
-export function render(elementOrElementGenerator, parentDom) {
-  const element =
-    typeof elementOrElementGenerator === 'function'
-      ? elementOrElementGenerator()
-      : elementOrElementGenerator;
-
+export function render(root, parentDom) {
   // set nextUnitOfWork
   wipRoot = {
     dom: parentDom,
     props: {
-      children: [element],
+      children: [root()],
     },
     alternate: currentRoot,
   };

@@ -7,7 +7,7 @@ export default function App() {
   return (
     <div>
       <h1>Teact Demo</h1>
-      <SimpleDemo />
+      <SimpleDemo text="Hello darkness my old friend" />
     </div>
   );
 }
