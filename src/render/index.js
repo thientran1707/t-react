@@ -65,6 +65,8 @@ function commitWork(fiber) {
   } else if (fiber.effecTag === EFFECT_TAG.DELETION) {
     // Delete DOM node
     parentDom.removeChild(fiber.dom);
+  } else {
+    console.log('Unknown changes, this should be not expected');
   }
 
   // Recursively commit the child and sibling
