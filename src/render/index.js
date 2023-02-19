@@ -1,6 +1,6 @@
 import { createDom, updateDom } from '../dom';
 import { reconcileChildren } from '../reconcile';
-import { commitWork, commitDeletion } from './commit';
+import { commitWork, commitDeletion } from '../commit';
 
 // Constants
 import { REACT_TEXT_ELEMENT, EFFECT_TAG } from '../constants';

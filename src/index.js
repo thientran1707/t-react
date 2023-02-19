@@ -1,5 +1,5 @@
 import { createElement } from './element';
-import { render, workLoop } from './phase/render';
+import { render, workLoop } from './render';
 
 // Start the work loop
 requestIdleCallback(workLoop);

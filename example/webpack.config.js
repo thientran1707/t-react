@@ -31,7 +31,7 @@ const config = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      react: 'teact',
+      react: 't-react',
     },
   },
 };

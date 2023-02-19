@@ -1,5 +1,5 @@
 {
-  "name": "teact",
+  "name": "t-react",
   "version": "1.0.0",
   "description": "A simple implementation of ReactJs",
   "main": "src/index.js",
