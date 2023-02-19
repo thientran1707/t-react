@@ -1,6 +1,8 @@
 import { createDom, updateDom } from '../dom';
 import { reconcileChildren } from '../reconcile';
 import { commitWork, commitDeletion } from '../commit';
+import { updateHostComponent } from './host-component';
+import { updateFunctionComponent } from './function-component';
 
 // Constants
 import { REACT_TEXT_ELEMENT, EFFECT_TAG } from '../constants';
@@ -9,19 +11,6 @@ let nextUnitOfWork = null;
 let currentRoot = null;
 let wipRoot = null;
 let deletions = [];
-
-function updateHostComponent(fiber) {
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
-  }
-
-  reconcileChildren(fiber, fiber.props.children);
-}
-
-function updateFunctionComponent(fiber) {
-  const children = [fiber.type(fiber.props)];
-  reconcileChildren(fiber, children);
-}
 
 /**
  * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, effecTag, props }
