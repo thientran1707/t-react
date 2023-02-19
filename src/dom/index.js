@@ -15,6 +15,14 @@ export function createDom(fiber) {
       ? document.createTextNode('')
       : document.createElement(type);
 
+  // Add event listener
+  Object.keys(props)
+    .filter(isEvent)
+    .forEach(key => {
+      dom.addEventListener(getNativeEventType(key), props[key]);
+    });
+
+  // Add new props
   Object.keys(props)
     .filter(isProperty)
     .forEach(key => (dom[key] = props[key]));
