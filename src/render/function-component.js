@@ -5,7 +5,6 @@ let wipFiber = null;
 let hookIndex = null;
 
 export function useState(initial) {
-  // TODO
   return [initial, () => {}];
 }
 

@@ -5,12 +5,8 @@ import { updateHostComponent } from './host-component';
 import { updateFunctionComponent } from './function-component';
 
 // Constants
+import { ReactGlobal } from '../global';
 import { REACT_TEXT_ELEMENT, EFFECT_TAG } from '../constants';
-
-let nextUnitOfWork = null;
-let currentRoot = null;
-let wipRoot = null;
-let deletions = [];
 
 /**
  * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, effecTag, props }
@@ -47,24 +43,24 @@ function performUnitOfWork(fiber) {
 }
 
 function commitRoot() {
-  deletions.forEach(commitWork);
-  commitWork(wipRoot.child);
-  currentRoot = wipRoot;
-  wipRoot = null;
+  ReactGlobal.deletions.forEach(commitWork);
+  commitWork(ReactGlobal.wipRoot.child);
+  ReactGlobal.currentRoot = ReactGlobal.wipRoot;
+  ReactGlobal.wipRoot = null;
 }
 
 export function workLoop(deadline) {
   let shouldYield = false;
 
-  while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+  while (ReactGlobal.nextUnitOfWork && !shouldYield) {
+    ReactGlobal.nextUnitOfWork = performUnitOfWork(ReactGlobal.nextUnitOfWork);
     shouldYield = deadline.timeRemaining() <= 0;
   }
 
   // we have completed the render phase, because there is no nextUnitOfWork
   // commit the work
-  if (!nextUnitOfWork && wipRoot) {
-    commitRoot(wipRoot);
+  if (!ReactGlobal.nextUnitOfWork && ReactGlobal.wipRoot) {
+    commitRoot(ReactGlobal.wipRoot);
   }
 
   // This will create the infinite loop
@@ -73,13 +69,13 @@ export function workLoop(deadline) {
 
 export function render(root, parentDom) {
   // set nextUnitOfWork
-  wipRoot = {
+  ReactGlobal.wipRoot = {
     dom: parentDom,
     props: {
       children: [root()],
     },
-    alternate: currentRoot,
+    alternate: ReactGlobal.currentRoot,
   };
-  deletions = [];
-  nextUnitOfWork = wipRoot;
+  ReactGlobal.deletions = [];
+  ReactGlobal.nextUnitOfWork = ReactGlobal.wipRoot;
 }

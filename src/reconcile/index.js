@@ -1,8 +1,9 @@
+import { ReactGlobal } from '../global';
 import { EFFECT_TAG } from '../constants';
 /**
  * Compare the diff between old fibers and the new fibers
  */
-export function reconcileChildren(wipFiber, elements, deletions) {
+export function reconcileChildren(wipFiber, elements) {
   let index = 0;
   let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
   let previousSibling = null;
@@ -39,7 +40,7 @@ export function reconcileChildren(wipFiber, elements, deletions) {
       // but when we commit the work, we do it from the wipRoot, which does not have the old fibers
       // so we need an array to keep track of nodes to remove
       oldFiber.effectTag = EFFECT_TAG.DELETION;
-      deletions.push(oldFiber);
+      ReactGlobal.deletions.push(oldFiber);
     }
 
     if (oldFiber) {
