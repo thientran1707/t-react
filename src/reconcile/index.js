@@ -4,13 +4,9 @@ import { EFFECT_TAG } from '../constants';
  */
 export function reconcileChildren(wipFiber, elements, deletions) {
   let index = 0;
-  let oldFiber =
-    wipFiber.alternate && wipFiber.alternate.child
-      ? wipFiber.alternate.child
-      : null;
+  let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
   let previousSibling = null;
-
-  while (index < elements.length || oldFiber != null) {
+  while (index < elements.length || !oldFiber) {
     const element = elements[index];
     let newFiber = null;
 

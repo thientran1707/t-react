@@ -18,13 +18,13 @@ function updateHostComponent(fiber) {
 }
 
 function updateFunctionComponent(fiber) {
-  const children = fiber.type(fiber.props);
+  const children = [fiber.type(fiber.props)];
   reconcileChildren(fiber, children);
 }
 
 /**
  * Fiber is a structure for unit of work { type, dom, parent, child, sibling, alternate, effecTag, props }
- * 1) Create dom
+ * 1) Update
  * 2) Reconcile
  * 3) Find next unit of work
  */
@@ -38,8 +38,8 @@ function performUnitOfWork(fiber) {
     updateHostComponent(fiber);
   }
 
-  // Step 3: Return next unit of work
-
+  // Find the next unit of work following the order:
+  // 1) child -> 2) find the sibling -> 3) uncle (sibling of parent)
   // if there is a child, we return it
   if (fiber.child) {
     return fiber.child;
@@ -69,24 +69,30 @@ function commitWork(fiber) {
     return;
   }
 
-  const parentDom = fiber.parent.dom;
+  // Some fibers does not have dom node
+  // We travel up until find a dom
+  let domParentFiber = fiber.parent;
+  while (!domParentFiber.dom) {
+    domParentFiber = domParentFiber.parent;
+  }
+  const parentDom = domParentFiber.dom;
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT && fiber.dom) {
     // Add new DOM node
     parentDom.appendChild(fiber.dom);
-  } else if (fiber.effecTag === EFFECT_TAG.UPDATE && !fiber.dom) {
+  } else if (fiber.effectTag === EFFECT_TAG.UPDATE && !fiber.dom) {
     // Update DOM node
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
-  } else if (fiber.effecTag === EFFECT_TAG.DELETION) {
+  } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
     // Delete DOM node
     parentDom.removeChild(fiber.dom);
-  } else {
-    console.log('Unknown changes, this should be not expected');
   }
 
   // Recursively commit the child and sibling
   commitWork(fiber.child);
   commitWork(fiber.sibling);
 }
+
+function commitDeletion() {}
 
 function workLoop(deadline) {
   let shouldYield = false;
