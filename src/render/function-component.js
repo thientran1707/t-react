@@ -1,4 +1,5 @@
 import { reconcileChildren } from '../reconcile';
+import { ReactGlobal } from '../global';
 
 // For fiber
 let wipFiber = null;
@@ -8,7 +9,7 @@ export function useState(initial) {
   const oldHook =
     wipFiber.alternate &&
     wipFiber.alternate.hooks &&
-    wipFiber.alternative.hooks[hookIndex];
+    wipFiber.alternate.hooks[hookIndex];
 
   const hook = {
     // copy the state from previous hook
@@ -17,7 +18,29 @@ export function useState(initial) {
     queue: [],
   };
 
-  const setState = action => {};
+  // Run the actions
+  const actions = oldHook ? oldHook.queue : [];
+  actions.forEach(action => {
+    hook.state = action(hook.state);
+  });
+
+  const setState = actionOrValue => {
+    hook.queue.push(
+      typeof actionOrValue === 'function' ? actionOrValue : () => actionOrValue
+    );
+
+    // trigger the new render phase, similar to the React.render function
+    ReactGlobal.wipRoot = {
+      dom: ReactGlobal.currentRoot.dom,
+      props: ReactGlobal.currentRoot.props,
+      alternate: ReactGlobal.currentRoot,
+    };
+    ReactGlobal.deletions = [];
+    ReactGlobal.nextUnitOfWork = ReactGlobal.wipRoot;
+  };
+
+  wipFiber.hooks.push(hook);
+  hookIndex++;
 
   return [hook.state, setState];
 }

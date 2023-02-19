@@ -13,7 +13,8 @@ export function reconcileChildren(wipFiber, elements) {
     let newFiber = null;
 
     // oldFiber: what we have render last time, element is new thing to render to the DOM
-    const sameType = oldFiber && element && element.type === oldFiber.type;
+    // we use shallow compare only
+    const sameType = oldFiber && element && element.type == oldFiber.type;
     if (sameType) {
       // Update the DOM with new props
       newFiber = {

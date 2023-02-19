@@ -27,7 +27,7 @@ export function commitWork(fiber) {
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT && fiber.dom) {
     // Add new DOM node
     parentDom.appendChild(fiber.dom);
-  } else if (fiber.effectTag === EFFECT_TAG.UPDATE && !fiber.dom) {
+  } else if (fiber.effectTag === EFFECT_TAG.UPDATE && fiber.dom) {
     // Update DOM node
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
