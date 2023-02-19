@@ -84,7 +84,7 @@ function commitWork(fiber) {
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
     // Delete DOM node
-    parentDom.removeChild(fiber.dom);
+    commitDeletion(fiber, parentDom);
   }
 
   // Recursively commit the child and sibling
@@ -92,7 +92,14 @@ function commitWork(fiber) {
   commitWork(fiber.sibling);
 }
 
-function commitDeletion() {}
+// Since not all fiber will have DOM element, we need to keep looking for the child with dom node
+function commitDeletion(fiber, parentDom) {
+  if (fiber.dom) {
+    parentDom.removeChild(fiber.dom);
+  } else {
+    commitDeletion(fiber.child, parentDom);
+  }
+}
 
 function workLoop(deadline) {
   let shouldYield = false;
