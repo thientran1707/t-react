@@ -1,5 +1,8 @@
 import { createElement } from './element';
-import { render } from './render';
+import { render, workLoop } from './phase/render';
+
+// Start the work loop
+requestIdleCallback(workLoop);
 
 const React = {
   createElement,
