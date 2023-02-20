@@ -17,7 +17,7 @@ export function createElement(type, props, ...children) {
     props: {
       ...props,
       children: children
-        .filter(child => !!child)
+        .filter(child => child != null && child !== false)
         .map(child =>
           typeof child === 'object' ? child : createTextElement(child)
         ),
