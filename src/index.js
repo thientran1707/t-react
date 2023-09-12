@@ -2,13 +2,17 @@ export function createElement() {
   console.log('createElement');
 }
 
-export function render() {
-  console.log('render');
+export function createRoot(parentDom) {
+  return {
+    render: root => {
+      console.log('render');
+    }
+  }
 }
 
 const React = {
   createElement,
-  render,
+  createRoot,
 };
 
 export default React;
