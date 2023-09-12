@@ -67,15 +67,20 @@ export function workLoop(deadline) {
   requestIdleCallback(workLoop);
 }
 
-export function render(root, parentDom) {
-  // set nextUnitOfWork
-  ReactGlobal.wipRoot = {
-    dom: parentDom,
-    props: {
-      children: [root()],
+export function createRoot(parentDom) {
+  return {
+    render: root => {
+      // set nextUnitOfWork
+      ReactGlobal.wipRoot = {
+        dom: parentDom,
+        props: {
+          children: [root()],
+        },
+        alternate: ReactGlobal.currentRoot,
+      };
+
+      ReactGlobal.deletions = [];
+      ReactGlobal.nextUnitOfWork = ReactGlobal.wipRoot;
     },
-    alternate: ReactGlobal.currentRoot,
   };
-  ReactGlobal.deletions = [];
-  ReactGlobal.nextUnitOfWork = ReactGlobal.wipRoot;
 }
